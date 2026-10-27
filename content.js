@@ -16,32 +16,22 @@
 
   const source = pre.textContent;
 
+  // GitHub renders .md files without turning single newlines into <br>.
   marked.use({
     gfm: true,
-    breaks: true,
+    breaks: false,
   });
 
   const rawHtml = marked.parse(source);
 
-  // Sanitize: parse into an inert document, drop script-capable nodes and
-  // attributes before anything touches the live DOM.
-  const doc = new DOMParser().parseFromString(rawHtml, "text/html");
-  doc
-    .querySelectorAll("script, iframe, object, embed, form, link, meta, base")
-    .forEach((el) => el.remove());
-  doc.querySelectorAll("*").forEach((el) => {
-    for (const attr of [...el.attributes]) {
-      const name = attr.name.toLowerCase();
-      const value = attr.value.trim().toLowerCase();
-      if (
-        name.startsWith("on") ||
-        ((name === "href" || name === "src" || name === "xlink:href") &&
-          (value.startsWith("javascript:") || value.startsWith("data:text/html")))
-      ) {
-        el.removeAttribute(attr.name);
-      }
-    }
-  });
+  // Sanitize with DOMPurify (allowlist-based, handles URL obfuscation and
+  // SVG/MathML tricks) before anything touches the live DOM. <style> and
+  // forms are dropped too, as on GitHub, so a document can't restyle or
+  // spoof the reader UI.
+  const doc = new DOMParser().parseFromString(
+    DOMPurify.sanitize(rawHtml, { FORBID_TAGS: ["style", "form"] }),
+    "text/html"
+  );
 
   // Turn ```mermaid code blocks into placeholders that mermaid renders once
   // the content is in the live DOM (it needs layout to measure text).
@@ -61,11 +51,12 @@
   const usedIds = new Set();
   doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((h) => {
     if (h.id) return;
+    // Same rules as GitHub: keep letters (any script), digits, "-" and "_".
     let base = h.textContent
       .trim()
       .toLowerCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
+      .replace(/[^\p{L}\p{M}\p{N}\s_-]/gu, "")
+      .replace(/\s/g, "-");
     if (!base) base = "heading";
     let id = base;
     let n = 1;
@@ -328,9 +319,11 @@
       return btn;
     };
     const upBtn = makeHeaderButton("↑", "Show parent folder", () =>
-      showRoot(new URL("..", rootUrl).href)
+      showRoot(new URL("..", rootUrl).href, { openReadme: true })
     );
-    const title = document.createElement("span");
+    // An <a> so it can link to the folder's README; without an href it's
+    // plain text.
+    const title = document.createElement("a");
     title.className = "md-tree-title";
     const homeBtn = makeHeaderButton(
       "⌂",

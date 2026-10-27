@@ -24,7 +24,7 @@ Open any markdown file in Chrome — drag a `.md` file into a tab, or press `Cmd
 - GitHub-flavored markdown via [marked](https://github.com/markedjs/marked) (tables, task lists, strikethrough, autolinks)
 - Mermaid diagrams: ```` ```mermaid ```` code blocks render as SVG ([mermaid](https://github.com/mermaid-js/mermaid), strict security level)
 - Light/dark theme follows the system preference
-- Sanitized output: scripts, iframes, event handlers, and `javascript:` links are stripped before rendering
+- Sanitized output via [DOMPurify](https://github.com/cure53/DOMPurify): scripts, iframes, event handlers, `<style>`, forms, and `javascript:` links are stripped before rendering
 - File tree panel for local folders, and for remote folders whose server publishes an HTML directory index
 - Leaves real HTML pages alone even if their URL ends in `.md`
 
@@ -36,6 +36,7 @@ Open any markdown file in Chrome — drag a `.md` file into a tab, or press `Cmd
 | `content.js` | Detects raw markdown pages, renders and sanitizes them, builds the file tree panel |
 | `background.js` | Service worker that relays `file://` directory listing requests |
 | `offscreen.html` / `offscreen.js` | Offscreen page that reads and parses `file://` directory listings |
-| `marked.min.js` | Bundled markdown parser (marked v12) |
+| `marked.js` | Bundled markdown parser (marked v18) |
+| `purify.min.js` | Bundled HTML sanitizer (DOMPurify v3) |
 | `mermaid.min.js` | Bundled diagram renderer (mermaid v12) |
 | `styles.css` | GitHub-style theme, light and dark |

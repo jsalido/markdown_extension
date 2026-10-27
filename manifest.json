@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markdown Reader",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Renders local and remote Markdown files as styled HTML, with GitHub-flavored formatting and dark mode.",
   "permissions": ["offscreen", "storage"],
   "host_permissions": ["file:///*"],
@@ -15,13 +15,19 @@
         "*.md",
         "*.md#*",
         "*.md?*",
+        "*.MD",
+        "*.MD#*",
+        "*.MD?*",
         "*.markdown",
         "*.markdown#*",
         "*.markdown?*",
+        "*.MARKDOWN",
+        "*.MARKDOWN#*",
+        "*.MARKDOWN?*",
         "*.mdown",
         "*.mkd"
       ],
-      "js": ["marked.min.js", "mermaid.min.js", "content.js"],
+      "js": ["marked.js", "purify.min.js", "mermaid.min.js", "content.js"],
       "css": ["styles.css"],
       "run_at": "document_end"
     }

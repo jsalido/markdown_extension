@@ -50,6 +50,23 @@ The next line contains a script tag in the source — it must NOT show an alert:
 
 <a href="javascript:alert('XSS')">This link must be inert</a>
 
+<a href="java&#x09;script:alert('XSS')">This obfuscated link must be inert too</a>
+
+<svg width="200" height="20"><a><animate attributeName="href" to="javascript:alert('XSS')"/><text y="15">Neither must this SVG link</text></a></svg>
+
+<style>body { background: red; }</style>
+
+The page background must not turn red.
+
+## Heading ids
+
+[Jump to Configuración avanzada](#configuración-avanzada)
+
+### Configuración avanzada
+
+Single newlines inside a paragraph
+should not become line breaks.
+
 ---
 
 Press `r` to see the raw source.
